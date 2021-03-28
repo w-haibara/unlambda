@@ -25,6 +25,14 @@ func Test_Render(t *testing.T) {
 			in:  "`````````````.H.e.l.l.o.,. .w.o.r.l.d.!i",
 			out: "Hello, world!",
 		},
+		{
+			in:  "`ri",
+			out: "\n",
+		},
+		{
+			in:  "```.ar.bi",
+			out: "a\nb",
+		},
 	}
 
 	for _, testCase := range testCases {
