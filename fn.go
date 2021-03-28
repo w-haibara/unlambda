@@ -7,8 +7,8 @@ import (
 )
 
 var DefaultFn = Fn{
-	"i": fnI,
-	"r": fnR,
+	"i": I,
+	"r": R,
 }
 
 var DefaultOption = Option{
@@ -17,16 +17,16 @@ var DefaultOption = Option{
 	F:   DefaultFn,
 }
 
-func fnP(n1, n2 *Node, op Option) *Node {
+func P(n1, n2 *Node, op Option) *Node {
 	fmt.Fprint(op.Out, strings.TrimPrefix(n1.Val, "."))
 	return n2
 }
 
-func fnI(n1, n2 *Node, op Option) *Node {
+func I(n1, n2 *Node, op Option) *Node {
 	return n2
 }
 
-func fnR(n1, n2 *Node, op Option) *Node {
+func R(n1, n2 *Node, op Option) *Node {
 	fmt.Fprintln(op.Out)
 	return n2
 }

@@ -188,7 +188,7 @@ func (op Option) eval(n *Node) *Node {
 		if n.Lhs == nil || n.Rhs == nil {
 			return nil
 		} else if strings.HasPrefix(n.Lhs.Val, ".") {
-			n1 := fnP(n.Lhs, n.Rhs, op)
+			n1 := P(n.Lhs, n.Rhs, op)
 			if n.IsRoot() {
 				return n1
 			} else {
