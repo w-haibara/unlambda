@@ -7,6 +7,7 @@ import (
 )
 
 var DefaultFn = Fn{
+	"k": K,
 	"i": I,
 	"r": R,
 }
@@ -17,12 +18,16 @@ var DefaultOption = Option{
 	F:   DefaultFn,
 }
 
-func P(n1, n2 *Node, op Option) *Node {
-	fmt.Fprint(op.Out, strings.TrimPrefix(n1.Val, "."))
+func K(n1, n2 *Node, op Option) *Node {
 	return n2
 }
 
 func I(n1, n2 *Node, op Option) *Node {
+	return n2
+}
+
+func P(n1, n2 *Node, op Option) *Node {
+	fmt.Fprint(op.Out, strings.TrimPrefix(n1.Val, "."))
 	return n2
 }
 

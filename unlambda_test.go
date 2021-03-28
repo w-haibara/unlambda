@@ -33,6 +33,14 @@ func Test_Render(t *testing.T) {
 			in:  "```.ar.bi",
 			out: "a\nb",
 		},
+		{
+			in:  "``ki`.ai",
+			out: "a",
+		},
+		{
+			in:  "```k.aii",
+			out: "a",
+		},
 	}
 
 	for _, testCase := range testCases {
