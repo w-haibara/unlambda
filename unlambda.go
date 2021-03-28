@@ -31,8 +31,8 @@ func (e Expr) Sprint() string {
 	return fmt.Sprintf("expr: [%v]", e)
 }
 
-func (e Expr) Print() {
-	fmt.Println(e.Sprint())
+func (e Expr) Fprint(out io.Writer) {
+	fmt.Fprintln(out, e.Sprint())
 }
 
 type Token []string
@@ -49,8 +49,8 @@ func (t Token) Sprint() string {
 	return str
 }
 
-func (t Token) Print() {
-	fmt.Println(t.Sprint())
+func (t Token) Fprint(out io.Writer) {
+	fmt.Fprintln(out, t.Sprint())
 }
 
 func (t Token) SprintStr() string {
@@ -61,8 +61,8 @@ func (t Token) SprintStr() string {
 	return str
 }
 
-func (t Token) PrintStr() {
-	fmt.Println(t.SprintStr())
+func (t Token) FprintStr(out io.Writer) {
+	fmt.Fprintln(out, t.SprintStr())
 }
 
 func (t Token) ToNode(n *Node) int {
@@ -126,8 +126,8 @@ func (n Node) Sprint() string {
 	return "node: " + n.sprint()
 }
 
-func (n Node) Print() {
-	fmt.Println(n.Sprint())
+func (n Node) Fprint(out io.Writer) {
+	fmt.Println(out, n.Sprint())
 }
 
 func (n Node) SprintFromRoot() string {
@@ -140,8 +140,8 @@ func (n Node) SprintFromRoot() string {
 	return ""
 }
 
-func (n Node) PrintFromRoot() {
-	fmt.Println(n.SprintFromRoot())
+func (n Node) FprintFromRoot(out io.Writer) {
+	fmt.Fprintln(out, n.SprintFromRoot())
 }
 
 func (n Node) SprintFn() string {
@@ -159,8 +159,8 @@ func (n Node) SprintFn() string {
 	return fmt.Sprintf("[%v]: [%v] --> [%v]", v1, v2, v3)
 }
 
-func (n Node) PrintFn() {
-	fmt.Println(n.SprintFn())
+func (n Node) FprintFn(out io.Writer) {
+	fmt.Fprintln(out, n.SprintFn())
 }
 
 type Fn map[string](func(*Node, *Node, Option) *Node)
@@ -168,6 +168,7 @@ type Fn map[string](func(*Node, *Node, Option) *Node)
 type Option struct {
 	In  io.Reader
 	Out io.Writer
+	Err io.Writer
 	F   Fn
 }
 

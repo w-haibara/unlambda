@@ -18,6 +18,7 @@ type cli struct {
 func (c *cli) run() int {
 	op := unlambda.Option{
 		In:  c.inReader,
+		Err: c.errWriter,
 		Out: c.outWriter,
 		F:   unlambda.DefaultFn,
 	}
@@ -29,11 +30,11 @@ func (c *cli) run() int {
 		stdin.Scan()
 		expr := strings.TrimSpace(stdin.Text())
 		e := unlambda.ToExpr(expr)
-		e.Print()
+		e.Fprint(op.Out)
 
 		fmt.Println("\n=== tokenize ===")
 		t := e.Tokenize()
-		t.Print()
+		t.Fprint(op.Out)
 
 		fmt.Println("\n=== eval ===")
 		op.Eval(t)
