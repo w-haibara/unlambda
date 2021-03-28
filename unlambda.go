@@ -198,7 +198,7 @@ func (op Option) eval(n *Node) *Node {
 				op.eval(n.Parent)
 			}
 		} else {
-			f, ok := op.F[n.Val]
+			f, ok := op.F[n.Lhs.Val]
 			if !ok {
 				n.Lhs = op.eval(n.Lhs)
 				n.Rhs = op.eval(n.Rhs)
