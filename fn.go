@@ -8,6 +8,7 @@ import (
 
 var DefaultFn = Fn{
 	"i": fnI,
+	"r": fnR,
 }
 
 var DefaultOption = Option{
@@ -22,5 +23,10 @@ func fnP(n1, n2 *Node, op Option) *Node {
 }
 
 func fnI(n1, n2 *Node, op Option) *Node {
+	return n2
+}
+
+func fnR(n1, n2 *Node, op Option) *Node {
+	fmt.Fprintln(op.Out)
 	return n2
 }
