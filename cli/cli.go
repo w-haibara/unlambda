@@ -20,7 +20,6 @@ func (c *cli) run() int {
 		In:  c.inReader,
 		Err: c.errWriter,
 		Out: c.outWriter,
-		F:   unlambda.DefaultFn,
 	}
 
 	for {
