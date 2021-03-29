@@ -17,7 +17,19 @@ func (op Option) S(n *Node) *Node {
 }
 
 func (op Option) K(n *Node) *Node {
-	return n
+	fmt.Fprintln(op.Err, "<k>", n.Val)
+
+	op.eval(n.Parent.Parent.Rhs, 0)
+
+	if n.Parent.Parent.IsRoot() {
+		n.Parent.Rhs.Parent = nil
+		return n.Parent.Rhs
+	}
+
+	n.Parent.Parent.Parent.Lhs = n.Parent.Rhs
+	n.Parent.Rhs.Parent = n.Parent.Parent.Parent
+
+	return n.Parent.Rhs
 }
 
 func (op Option) I(n *Node) *Node {
@@ -101,6 +113,13 @@ func (op Option) eval(n *Node, i int) *Node {
 			panic("parameter not found")
 		}
 		n = op.eval(n.Lhs, i+1)
+	case "k":
+		if !n.IsRoot() && n.Parent.Val == "`" && !n.Parent.IsRoot() && n.Parent.Parent.Val == "`" {
+			n = op.K(n)
+			if !n.IsRoot() {
+				n = op.eval(n.Parent, i+1)
+			}
+		}
 	case "i":
 		n = op.I(n)
 		if !n.IsRoot() {

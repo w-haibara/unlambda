@@ -16,7 +16,7 @@ type TestCase struct {
 
 func Test_Render(t *testing.T) {
 	testCases := []TestCase{
-		// p
+		// function p
 		{
 			in:  "`.a.b",
 			out: "a",
@@ -29,7 +29,7 @@ func Test_Render(t *testing.T) {
 			in:  "`````````````.H.e.l.l.o.,. .w.o.r.l.d.!i",
 			out: "Hello, world!",
 		},
-		// r
+		// function r
 		{
 			in:  "`ri",
 			out: "\n",
@@ -38,16 +38,15 @@ func Test_Render(t *testing.T) {
 			in:  "```.ar.bi",
 			out: "a\nb",
 		},
-		/*
-			{
-				in:  "``ki`.ai",
-				out: "a",
-			},
-			{
-				in:  "```k.aii",
-				out: "a",
-			},
-		*/
+		// function k
+		{
+			in:  "``ki`.ai",
+			out: "a",
+		},
+		{
+			in:  "```k.aii",
+			out: "a",
+		},
 	}
 
 	for _, testCase := range testCases {
