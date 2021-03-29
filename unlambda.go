@@ -37,12 +37,14 @@ func (op Option) I(n *Node) *Node {
 func (op Option) P(n *Node) *Node {
 	fmt.Fprintln(op.Err, "<p>", n.Val)
 	fmt.Fprint(op.Out, string(n.Val[1]))
+	fmt.Fprintln(op.Err, "")
 	return op.I(n)
 }
 
 func (op Option) R(n *Node) *Node {
-	fmt.Fprintln(op.Err, "<r>")
+	fmt.Fprintln(op.Err, "\n<r>")
 	fmt.Fprintln(op.Out, "")
+	fmt.Fprintln(op.Err, "")
 	return op.I(n)
 }
 
