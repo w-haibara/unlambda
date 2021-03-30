@@ -1,5 +1,7 @@
 /unlambda
 
+/*.log
+
 # Binaries for programs and plugins
 *.exe
 *.exe~

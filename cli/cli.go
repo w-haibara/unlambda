@@ -2,10 +2,12 @@ package cli
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"io"
 	"os"
 	"strings"
+	"time"
 	"unlambda"
 )
 
@@ -18,7 +20,7 @@ type cli struct {
 func (c *cli) run() int {
 	op := unlambda.Option{
 		In:  c.inReader,
-		Err: c.errWriter,
+		Err: io.Discard, //c.errWriter,
 		Out: c.outWriter,
 	}
 
@@ -36,7 +38,10 @@ func (c *cli) run() int {
 		t.Fprint(op.Out)
 
 		fmt.Println("\n=== eval ===")
-		op.Eval(t)
+
+		ctx, cancel := context.WithTimeout(context.Background(), time.Duration(time.Second*3))
+		op.Eval(ctx, t)
+		cancel()
 		println()
 	}
 	return 0

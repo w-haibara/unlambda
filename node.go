@@ -3,7 +3,6 @@ package unlambda
 import (
 	"fmt"
 	"io"
-	//	"strings"
 )
 
 type Node struct {
@@ -11,6 +10,28 @@ type Node struct {
 	Parent *Node
 	Lhs    *Node
 	Rhs    *Node
+}
+
+func (n *Node) Copy(p *Node) *Node {
+	n1 := new(Node)
+
+	if !n.IsLeaf() {
+		n1.Lhs = n.Lhs.Copy(n1)
+		n1.Rhs = n.Rhs.Copy(n1)
+	}
+
+	if p != nil {
+		n1.Parent = p
+		if p.Lhs == n {
+			p.Lhs = n1
+		} else {
+			p.Rhs = n1
+		}
+	}
+
+	n1.Val = n.Val
+
+	return n1
 }
 
 func (n Node) IsRoot() bool {
@@ -21,14 +42,34 @@ func (n Node) IsLeaf() bool {
 	return n.Lhs == nil && n.Rhs == nil
 }
 
+func (n *Node) IsLhs() bool {
+	return !n.IsRoot() && n.Parent.Lhs == n
+}
+
+func (n *Node) IsRhs() bool {
+	return !n.IsRoot() && n.Parent.Rhs == n
+}
+
 func (n *Node) CheckBranches() bool {
-	if n.IsLeaf() {
+	if n.IsRoot() && n.IsLeaf() {
 		return true
 	}
 
-	if n.Lhs.Parent != n || n.Rhs.Parent != n {
+	if !n.IsRoot() {
+		if !(n.Parent.Lhs == n && n.Parent.Rhs != nil) &&
+			!(n.Parent.Lhs != nil && n.Parent.Rhs == n) {
+			return false
+		}
+
+		if n.IsLeaf() {
+			return true
+		}
+	}
+
+	if n.Lhs == nil || n.Rhs == nil {
 		return false
 	}
+
 	return n.Lhs.CheckBranches() && n.Rhs.CheckBranches()
 }
 
@@ -98,28 +139,3 @@ func (n Node) SprintFn() string {
 func (n Node) FprintFn(out io.Writer) {
 	fmt.Fprintln(out, n.SprintFn())
 }
-
-/*
-func (n Node) sprintTree(i int) string {
-	str := ""
-	if !n.IsLeaf() {
-		str += strings.Repeat("| ", i) + n.Lhs.Sprint() + "\n"
-		str += n.Lhs.sprintTree(i + 1)
-		str += strings.Repeat("| ", i) + n.Rhs.Sprint() + "\n"
-		str += n.Rhs.sprintTree(i + 1)
-	}
-	return str
-}
-
-func (n *Node) SprintTree() string {
-	str := ""
-	str += n.SprintFn() + "\n"
-	return str + n.sprintTree(1)
-}
-
-func (n Node) FprintTree(out io.Writer) {
-	fmt.Fprintln(out, "--- tree ---")
-	fmt.Fprintln(out, n.SprintTree())
-	fmt.Fprintln(out, "---      ---")
-}
-*/
