@@ -129,14 +129,14 @@ func (op Option) I(ctx context.Context, n *Node) *Node {
 func (op Option) P(ctx context.Context, n *Node) *Node {
 	n1 := op.I(ctx, n)
 	fmt.Fprint(op.Out, string(n.Val[1]))
-	fmt.Fprintln(op.Err, "PRINT:"+string(n.Val[1]))
+	fmt.Fprintln(op.Err, "	PRINT:"+string(n.Val[1]))
 	return n1
 }
 
 func (op Option) R(ctx context.Context, n *Node) *Node {
 	n1 := op.I(ctx, n)
 	fmt.Fprintln(op.Out, "")
-	fmt.Fprintln(op.Err, "PRINT: \\n")
+	fmt.Fprintln(op.Err, "	PRINT: \\n")
 	return n1
 }
 
@@ -163,6 +163,8 @@ func (op Option) Eval(ctx context.Context, t Token) {
 		n.FprintFn(op.Err)
 
 		n.FprintTreeFromRoot(op.Err)
+
+		n.FprintExpr(op.Err)
 	} else {
 		fmt.Fprintln(op.Err, "node: nil")
 	}
