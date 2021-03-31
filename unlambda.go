@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"strings"
+	//	"strings"
 )
 
 type Option struct {
@@ -14,36 +14,38 @@ type Option struct {
 	Err io.Writer
 }
 
-func (op Option) S(ctx context.Context, n *Node) *Node {
-	defer func() {
-		if !n.CheckBranches() {
-			fmt.Fprintln(op.Err, "branches are invalid")
-			panic("branches are invalid")
-		}
-	}()
+func check(n *Node) {
+	if !n.CheckBranches() {
+		panic("branches are invalid")
+	}
+}
 
-	fmt.Fprintln(op.Err, "---- s parameter 1 ----")
+func (op Option) S(ctx context.Context, n *Node) *Node {
+	//fmt.Fprintln(op.Err, "---- s parameter 1 ----")
 	n.Parent.Rhs = op.eval(ctx, n.Parent.Rhs.Copy(nil), 0)
 	n.Parent.Rhs.Parent = n.Parent
-	fmt.Fprintln(op.Err, "---- 1111111111111 ----")
+	//fmt.Fprintln(op.Err, "---- 1111111111111 ----")
 
 	if !n.Parent.IsLhs() || n.Parent.Parent.Val != "`" {
+		check(n.Parent)
 		return n.Parent
 	}
 
-	fmt.Fprintln(op.Err, "---- s parameter 2 ----")
+	//fmt.Fprintln(op.Err, "---- s parameter 2 ----")
 	n.Parent.Parent.Rhs = op.eval(ctx, n.Parent.Parent.Rhs.Copy(nil), 0)
-	n.Parent.Parent.Rhs.Parent = n.Parent
-	fmt.Fprintln(op.Err, "---- 2222222222222 ----")
+	n.Parent.Parent.Rhs.Parent = n.Parent.Parent
+	//fmt.Fprintln(op.Err, "---- 2222222222222 ----")
 
 	if !n.Parent.Parent.IsLhs() || n.Parent.Parent.Parent.Val != "`" {
+		n.Parent.Parent.FprintExpr(op.Err)
+		check(n.Parent.Parent)
 		return n.Parent.Parent
 	}
 
-	fmt.Fprintln(op.Err, "---- s parameter 3 ----")
+	//fmt.Fprintln(op.Err, "---- s parameter 3 ----")
 	n.Parent.Parent.Parent.Rhs = op.eval(ctx, n.Parent.Parent.Parent.Rhs.Copy(nil), 0)
 	n.Parent.Parent.Parent.Rhs.Parent = n.Parent.Parent
-	fmt.Fprintln(op.Err, "---- 3333333333333 ----")
+	//fmt.Fprintln(op.Err, "---- 3333333333333 ----")
 
 	root := n.Parent.Parent.Parent
 	n1 := n.Parent.Rhs
@@ -69,30 +71,24 @@ func (op Option) S(ctx context.Context, n *Node) *Node {
 	root.Rhs.Rhs = n4
 	n4.Parent = root.Rhs
 
+	check(root)
 	return root
 }
 
 func (op Option) K(ctx context.Context, n *Node) *Node {
-	defer func() {
-		if !n.CheckBranches() {
-			fmt.Fprintln(op.Err, "branches are invalid")
-			panic("branches are invalid")
-		}
-	}()
-
-	fmt.Fprintln(op.Err, "---- k parameter 1 ----")
+	//fmt.Fprintln(op.Err, "---- k parameter 1 ----")
 	n.Parent.Rhs = op.eval(ctx, n.Parent.Rhs.Copy(nil), 0)
 	n.Parent.Rhs.Parent = n.Parent
-	fmt.Fprintln(op.Err, "---- 1111111111111 ----")
+	//fmt.Fprintln(op.Err, "---- 1111111111111 ----")
 
 	if !n.Parent.IsLhs() || n.Parent.Parent.Val != "`" {
 		return n.Parent
 	}
 
-	fmt.Fprintln(op.Err, "---- k parameter 2 ----")
+	//fmt.Fprintln(op.Err, "---- k parameter 2 ----")
 	n.Parent.Parent.Rhs = op.eval(ctx, n.Parent.Parent.Rhs.Copy(nil), 0)
 	n.Parent.Parent.Rhs.Parent = n.Parent.Parent
-	fmt.Fprintln(op.Err, "---- 2222222222222 ----")
+	//fmt.Fprintln(op.Err, "---- 2222222222222 ----")
 
 	if n.Parent.Parent.IsRoot() {
 		n.Parent.Rhs.Parent = nil
@@ -111,10 +107,10 @@ func (op Option) K(ctx context.Context, n *Node) *Node {
 }
 
 func (op Option) I(ctx context.Context, n *Node) *Node {
-	fmt.Fprintln(op.Err, "---- i parameter   ----")
+	//fmt.Fprintln(op.Err, "---- i parameter   ----")
 	n.Parent.Rhs = op.eval(ctx, n.Parent.Rhs.Copy(nil), 0)
 	n.Parent.Rhs.Parent = n.Parent
-	fmt.Fprintln(op.Err, "---- 1111111111111 ----")
+	//fmt.Fprintln(op.Err, "---- 1111111111111 ----")
 
 	n.Parent.Rhs = op.eval(ctx, n.Parent.Rhs.Copy(nil), 0)
 	n.Parent.Rhs.Parent = n.Parent
@@ -182,7 +178,7 @@ func (op Option) eval(ctx context.Context, n *Node, i int) *Node {
 	default:
 	}
 
-	ind := strings.Repeat(" ", i)
+	ind := "" //strings.Repeat(" ", i)
 
 	if n == nil {
 		fmt.Fprintln(op.Err, ind, "node: nil")
@@ -196,49 +192,67 @@ func (op Option) eval(ctx context.Context, n *Node, i int) *Node {
 		}
 	}()
 
-	fmt.Fprintln(op.Err, ind, n.SprintTree())
-	fmt.Fprintln(op.Err, ind, n.SprintTreeFromRoot())
-	fmt.Fprintln(op.Err, ind, "node:", n.Sprint())
-	fmt.Fprintln(op.Err, ind, "func:", n.SprintFn())
+	//fmt.Fprintln(op.Err, ind, n.SprintTree())
+	//fmt.Fprintln(op.Err, ind, n.SprintTreeFromRoot())
+	//fmt.Fprintln(op.Err, ind, "node:", n.Sprint())
+	//fmt.Fprintln(op.Err, ind, "func:", n.SprintFn())
 
 	if n.IsRoot() {
-		fmt.Fprintln(op.Err, ind, "the node is root")
+		//fmt.Fprintln(op.Err, ind, "the node is root")
 	}
 
 	if n.IsLeaf() {
-		fmt.Fprintln(op.Err, ind, "the node is leaf")
+		//fmt.Fprintln(op.Err, ind, "the node is leaf")
 	}
 
 	if n.IsRoot() && n.IsLeaf() {
-		fmt.Fprintln(op.Err, ind, "the node is single")
+		//fmt.Fprintln(op.Err, ind, "the node is single")
 		return n
 	}
 
 	if n.IsLeaf() && n.Parent.Rhs == n {
-		fmt.Fprintln(op.Err, ind, "the node is single parameter")
+		//fmt.Fprintln(op.Err, ind, "the node is single parameter")
 		return n
 	}
-	fmt.Fprintln(op.Err, ind, "val:", n.Val)
+
+	if n.Curried {
+		//fmt.Fprintln(op.Err, ind, "the node is curried")
+		return n
+	}
+
+	//fmt.Fprintln(op.Err, ind, "val:", n.Val)
+	n.FprintExpr(op.Err)
+
 	switch string(n.Val[0]) {
 	case "`":
-		fmt.Fprintln(op.Err, "<`>")
+		// fmt.Fprintln(op.Err, "<`>")
 
 		if n.IsLeaf() {
 			panic("parameter not found")
 		}
 
-		if n.Lhs.Val == "k" && n.Rhs.IsLeaf() && (n.IsRoot() || n.IsRhs() || n.Parent.Val != "`") {
-			fmt.Fprintln(op.Err, ind, "the node is function k with 1 parameter")
+		if n.Lhs.Val == "k" && (n.Rhs.Curried || n.Rhs.IsLeaf()) && (n.IsRoot() || n.IsRhs() || n.Parent.Val != "`") {
+			//fmt.Fprintln(op.Err, ind, "the node is function k with 1 parameter")
+			n.Curried = true
 			return n
 		}
 
-		if n.Lhs.Val == "s" && n.Rhs.IsLeaf() && (n.IsRoot() || n.IsRhs() || n.Parent.Val != "`") {
-			fmt.Fprintln(op.Err, ind, "the node is function s with 1 parameter")
+		if n.Lhs.Val == "s" && (n.Rhs.Curried || n.Rhs.IsLeaf()) && (n.IsRoot() || n.IsRhs() || n.Parent.Val != "`") {
+			//fmt.Fprintln(op.Err, ind, "the node is function s with 1 parameter")
+			n.Curried = true
 			return n
 		}
 
-		if n.Lhs.Val == "s" && n.Rhs.IsLeaf() && n.Parent.Rhs.IsLeaf() && (n.Parent.IsRoot() || n.Parent.Parent.Val != "`" || n.Parent.IsRhs()) {
-			fmt.Fprintln(op.Err, ind, "the node is function s with 2 parameter")
+		if !n.Lhs.IsLeaf() && n.Lhs.Lhs.Val == "s" && (n.Rhs.Curried || n.Rhs.IsLeaf()) &&
+			(n.Lhs.Rhs.Curried || n.Lhs.Rhs.IsLeaf()) && (n.IsRoot() || n.Parent.Val != "`" || n.IsRhs()) {
+			//fmt.Fprintln(op.Err, ind, "the node is function s with 2 parameter")
+			n.Curried = true
+			return n
+		}
+
+		if n.Lhs.Curried && n.Rhs.Curried {
+			//fmt.Fprintln(op.Err, ind, "both children of the node are curried")
+			n.Curried = true
 			return n
 		}
 
@@ -248,35 +262,35 @@ func (op Option) eval(ctx context.Context, n *Node, i int) *Node {
 			return n
 		}
 
-		fmt.Fprintln(op.Err, "<s>")
+		//		fmt.Fprintln(op.Err, "<s>")
 		n = op.eval(ctx, op.S(ctx, n), i+1)
 	case "k":
 		if n.Parent.Val != "`" {
 			return n
 		}
 
-		fmt.Fprintln(op.Err, "<k>")
+		//	fmt.Fprintln(op.Err, "<k>")
 		n = op.eval(ctx, op.K(ctx, n), i+1)
 	case "i":
 		if n.Parent.Val != "`" {
 			return n
 		}
 
-		fmt.Fprintln(op.Err, "<i>")
+		//fmt.Fprintln(op.Err, "<i>")
 		n = op.eval(ctx, op.I(ctx, n), i+1)
 	case ".":
 		if n.Parent.Val != "`" {
 			return n
 		}
 
-		fmt.Fprintln(op.Err, "<p>")
+		//fmt.Fprintln(op.Err, "<p>")
 		n = op.eval(ctx, op.P(ctx, n), i+1)
 	case "r":
 		if n.Parent.Val != "`" {
 			return n
 		}
 
-		fmt.Fprintln(op.Err, "<r>")
+		//fmt.Fprintln(op.Err, "<r>")
 		n = op.eval(ctx, op.R(ctx, n), i+1)
 	default:
 		panic(fmt.Sprintln("unknown token:", n.Val))

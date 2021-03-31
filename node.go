@@ -6,10 +6,11 @@ import (
 )
 
 type Node struct {
-	Val    string
-	Parent *Node
-	Lhs    *Node
-	Rhs    *Node
+	Val     string
+	Parent  *Node
+	Lhs     *Node
+	Rhs     *Node
+	Curried bool
 }
 
 func (n *Node) Copy(p *Node) *Node {
@@ -30,6 +31,7 @@ func (n *Node) Copy(p *Node) *Node {
 	}
 
 	n1.Val = n.Val
+	n1.Curried = n.Curried
 
 	return n1
 }
@@ -58,6 +60,10 @@ func (n *Node) CheckBranches() bool {
 	if !n.IsRoot() {
 		if !(n.Parent.Lhs == n && n.Parent.Rhs != nil) &&
 			!(n.Parent.Lhs != nil && n.Parent.Rhs == n) {
+			fmt.Printf("n.Parent.Lhs: %p\n", n.Parent.Lhs)
+			fmt.Printf("n.Parent.Rhs: %p\n", n.Parent.Rhs)
+			fmt.Printf("n.Parent    : %p\n", n.Parent)
+			fmt.Printf("n           : %p\n", n)
 			return false
 		}
 
@@ -79,6 +85,25 @@ func (n Node) Sprint() string {
 
 func (n Node) Fprint(out io.Writer) {
 	fmt.Fprintln(out, n.Sprint())
+}
+
+func (n Node) sprintExpr() string {
+	str := n.Val
+	if n.Lhs != nil {
+		str += n.Lhs.sprintExpr()
+	}
+	if n.Rhs != nil {
+		str += n.Rhs.sprintExpr()
+	}
+	return str
+}
+
+func (n Node) SprintExpr() string {
+	return "expr: " + n.sprintExpr()
+}
+
+func (n Node) FprintExpr(out io.Writer) {
+	fmt.Fprintln(out, n.SprintExpr())
 }
 
 func (n Node) sprintTree() string {

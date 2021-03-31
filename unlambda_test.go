@@ -91,16 +91,21 @@ func Test_Render(t *testing.T) {
 			in:  "```sii`.a.b",
 			out: "ab",
 		},
+		{
+			in:  "``si`k.a",
+			out: "",
+		},
 	}
 
-	f, err := os.OpenFile("test.log", os.O_WRONLY|os.O_CREATE, 0644)
+	f, err := os.Create("test.log")
 	if err != nil {
 		panic(err)
 	}
 	defer f.Close()
+
 	fr := bufio.NewWriter(f)
 
-	for _, testCase := range testCases {
+	for i, testCase := range testCases {
 		buffer := &bytes.Buffer{}
 		op := Option{
 			//In:  os.Stdin,
@@ -108,6 +113,7 @@ func Test_Render(t *testing.T) {
 			Err: fr,
 		}
 
+		fmt.Println(i, testCase.in)
 		fmt.Fprintln(op.Err, "----------------------")
 
 		expr := ToExpr(testCase.in)

@@ -20,7 +20,7 @@ type cli struct {
 func (c *cli) run() int {
 	op := unlambda.Option{
 		In:  c.inReader,
-		Err: io.Discard, //c.errWriter,
+		Err: c.errWriter,
 		Out: c.outWriter,
 	}
 
@@ -39,7 +39,7 @@ func (c *cli) run() int {
 
 		fmt.Println("\n=== eval ===")
 
-		ctx, cancel := context.WithTimeout(context.Background(), time.Duration(time.Second*3))
+		ctx, cancel := context.WithTimeout(context.Background(), time.Duration(time.Second*1))
 		op.Eval(ctx, t)
 		cancel()
 		println()
