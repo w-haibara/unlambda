@@ -97,8 +97,6 @@ func Test_parser(t *testing.T) {
 
 		if diff := cmp.Diff(testCase.out, *node, cmp.AllowUnexported(testCase.out)); diff != "" {
 			t.Error(diff)
-		} else {
-			println(diff)
 		}
 	}
 }
