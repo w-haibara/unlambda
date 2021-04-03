@@ -46,3 +46,11 @@ func (n *node) add(l, r node) error {
 
 	return nil
 }
+
+func (n *node) replaceL(l node) {
+	n.l = &l
+}
+
+func (n *node) replaceR(r node) {
+	n.r = &r
+}
