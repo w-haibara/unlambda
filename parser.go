@@ -36,15 +36,13 @@ func (n node) isLeaf() bool {
 	return n.l == nil && n.r == nil
 }
 
-func (n *node) add(l, r *node) error {
+func (n *node) add(l, r node) error {
 	if !n.isLeaf() {
 		return fmt.Errorf("node is not leaf")
 	}
 
-	n.l = new(node)
-	*n.l = *l
-	n.r = new(node)
-	*n.r = *r
+	n.l = &l
+	n.r = &r
 
 	return nil
 }

@@ -244,7 +244,7 @@ func Test_add(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
-		err := (&testCase.in).add(&testCase.inL, &testCase.inR)
+		err := (&testCase.in).add(testCase.inL, testCase.inR)
 		assert.Equal(t, testCase.err, err)
 
 		if diff := cmp.Diff(testCase.inAfter, testCase.in, cmp.AllowUnexported(testCase.in)); diff != "" {
