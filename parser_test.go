@@ -100,3 +100,155 @@ func Test_parser(t *testing.T) {
 		}
 	}
 }
+
+func Test_add(t *testing.T) {
+	testCases := []struct {
+		in      node
+		inL     node
+		inR     node
+		inAfter node
+		err     error
+	}{
+		{
+			in: node{
+				v: "`",
+			},
+			inL: node{
+				v: ".a",
+			},
+			inR: node{
+				v: ".b",
+			},
+			inAfter: node{
+				v: "`",
+				l: &node{
+					v: ".a",
+				},
+				r: &node{
+					v: ".b",
+				},
+			},
+			err: nil,
+		},
+		{
+			in: node{
+				v: "`",
+			},
+			inL: node{
+				v: "`",
+				l: &node{
+					v: ".a",
+				},
+				r: &node{
+					v: ".b",
+				},
+			},
+			inR: node{
+				v: ".c",
+			},
+			inAfter: node{
+				v: "`",
+				l: &node{
+					v: "`",
+					l: &node{
+						v: ".a",
+					},
+					r: &node{
+						v: ".b",
+					},
+				},
+				r: &node{
+					v: ".c",
+				},
+			},
+			err: nil,
+		},
+		{
+			in: node{
+				v: "`",
+			},
+			inL: node{
+				v: ".a",
+			},
+			inR: node{
+				v: "`",
+				l: &node{
+					v: ".b",
+				},
+				r: &node{
+					v: ".c",
+				},
+			},
+			inAfter: node{
+				v: "`",
+				l: &node{
+					v: ".a",
+				},
+				r: &node{
+					v: "`",
+					l: &node{
+						v: ".b",
+					},
+					r: &node{
+						v: ".c",
+					},
+				},
+			},
+			err: nil,
+		},
+		{
+			in: node{
+				v: "`",
+			},
+			inL: node{
+				v: "`",
+				l: &node{
+					v: ".a",
+				},
+				r: &node{
+					v: ".b",
+				},
+			},
+			inR: node{
+				v: "`",
+				l: &node{
+					v: ".c",
+				},
+				r: &node{
+					v: ".d",
+				},
+			},
+			inAfter: node{
+				v: "`",
+				l: &node{
+					v: "`",
+					l: &node{
+						v: ".a",
+					},
+					r: &node{
+						v: ".b",
+					},
+				},
+				r: &node{
+					v: "`",
+					l: &node{
+						v: ".c",
+					},
+					r: &node{
+						v: ".d",
+					},
+				},
+			},
+			err: nil,
+		},
+	}
+
+	for _, testCase := range testCases {
+		err := (&testCase.in).add(&testCase.inL, &testCase.inR)
+		assert.Equal(t, testCase.err, err)
+
+		if diff := cmp.Diff(testCase.inAfter, testCase.in, cmp.AllowUnexported(testCase.in)); diff != "" {
+			t.Error(diff)
+		}
+	}
+}

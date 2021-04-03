@@ -1,6 +1,8 @@
 package unlambda
 
-import ()
+import (
+	"fmt"
+)
 
 type node struct {
 	v string
@@ -28,4 +30,21 @@ func (t *token) parse() (n *node, err error) {
 	n.v = v
 
 	return n, nil
+}
+
+func (n node) isLeaf() bool {
+	return n.l == nil && n.r == nil
+}
+
+func (n *node) add(l, r *node) error {
+	if !n.isLeaf() {
+		return fmt.Errorf("node is not leaf")
+	}
+
+	n.l = new(node)
+	*n.l = *l
+	n.r = new(node)
+	*n.r = *r
+
+	return nil
 }
