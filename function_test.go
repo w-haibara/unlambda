@@ -1,10 +1,12 @@
 package unlambda
 
 import (
+	"bytes"
 	"os"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_s(t *testing.T) {
@@ -172,36 +174,13 @@ func Test_i(t *testing.T) {
 				v: ".a",
 			},
 		},
-		/*
-			{
-				in: node{
-					v: "`",
-					l: &node{
-						v: "`",
-						l: &node{
-							v: "k",
-						},
-						r: &node{
-							v: "`",
-							l: &node{
-								v: "k",
-							},
-							r: &node{
-								v: ".a",
-							},
-						},
-					},
-					r: &node{
-						v: "`",
-						l: &node{
-							v: "k",
-						},
-						r: &node{
-							v: ".b",
-						},
-					},
+		{
+			in: node{
+				v: "`",
+				l: &node{
+					v: "i",
 				},
-				inAfter: node{
+				r: &node{
 					v: "`",
 					l: &node{
 						v: "k",
@@ -211,7 +190,16 @@ func Test_i(t *testing.T) {
 					},
 				},
 			},
-		*/
+			inAfter: node{
+				v: "`",
+				l: &node{
+					v: "k",
+				},
+				r: &node{
+					v: ".a",
+				},
+			},
+		},
 	}
 
 	env := Env{
@@ -226,5 +214,119 @@ func Test_i(t *testing.T) {
 		if diff := cmp.Diff(testCase.inAfter, testCase.in, cmp.AllowUnexported(testCase.in)); diff != "" {
 			t.Error(diff)
 		}
+	}
+}
+
+func Test_dotX(t *testing.T) {
+	testCases := []struct {
+		in      node
+		inAfter node
+		out     string
+	}{
+		{
+			in: node{
+				v: "`",
+				l: &node{
+					v: ".a",
+				},
+				r: &node{
+					v: ".b",
+				},
+			},
+			inAfter: node{
+				v: ".b",
+			},
+			out: "a",
+		},
+		{
+			in: node{
+				v: "`",
+				l: &node{
+					v: ".a",
+				},
+				r: &node{
+					v: "`",
+					l: &node{
+						v: "k",
+					},
+					r: &node{
+						v: ".b",
+					},
+				},
+			},
+			inAfter: node{
+				v: "`",
+				l: &node{
+					v: "k",
+				},
+				r: &node{
+					v: ".b",
+				},
+			},
+			out: "a",
+		},
+		{
+			in: node{
+				v: "`",
+				l: &node{
+					v: ".あ",
+				},
+				r: &node{
+					v: ".b",
+				},
+			},
+			inAfter: node{
+				v: ".b",
+			},
+			out: "あ",
+		},
+		{
+			in: node{
+				v: "`",
+				l: &node{
+					v: ".🤔",
+				},
+				r: &node{
+					v: ".b",
+				},
+			},
+			inAfter: node{
+				v: ".b",
+			},
+			out: "🤔",
+		},
+		{
+			in: node{
+				v: "`",
+				l: &node{
+					v: ".👨‍👨‍👧‍👦",
+				},
+				r: &node{
+					v: ".b",
+				},
+			},
+			inAfter: node{
+				v: ".b",
+			},
+			out: "👨‍👨‍👧‍👦",
+		},
+	}
+
+	out := &bytes.Buffer{}
+	env := Env{
+		//In:  os.Stdin,
+		Out: out,
+		Err: os.Stderr,
+	}
+
+	for _, testCase := range testCases {
+		env.dotX(&testCase.in)
+
+		if diff := cmp.Diff(testCase.inAfter, testCase.in, cmp.AllowUnexported(testCase.in)); diff != "" {
+			t.Error(diff)
+		}
+
+		assert.Equal(t, testCase.out, out.String())
+		out.Reset()
 	}
 }

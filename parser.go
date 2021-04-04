@@ -54,3 +54,9 @@ func (n *node) replaceL(l node) {
 func (n *node) replaceR(r node) {
 	n.r = &r
 }
+
+func (n *node) replace(p node) {
+	n.v = p.v
+	n.l = p.l
+	n.r = p.r
+}

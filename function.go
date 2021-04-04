@@ -27,23 +27,20 @@ func (env Env) s(n *node) {
 }
 
 func (env Env) k(n *node) {
-	n.v = n.l.r.v
-	r := n.l.r.r
-	n.l = n.l.r.l
-	n.r = r
+	n.replace(*n.l.r)
 }
 
 func (env Env) i(n *node) {
-	n.v = n.r.v
-	r := n.r.r
-	n.l = n.r.l
-	n.r = r
+	n.replace(*n.r)
 }
 
-func (env Env) p(n *node) {
-	fmt.Fprint(env.Out, "a")
+func (env Env) dotX(n *node) {
+	str := string(n.l.v[1:])
+	env.i(n)
+	fmt.Fprint(env.Out, str)
 }
 
 func (env Env) r(n *node) {
+	env.i(n)
 	fmt.Fprintln(env.Out, "")
 }
