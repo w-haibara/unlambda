@@ -28,8 +28,6 @@ func (c *cli) run() int {
 	stdin.Scan()
 	expr := strings.TrimSpace(stdin.Text())
 
-	fmt.Println(expr)
-
 	e.EvalString(expr)
 	println()
 

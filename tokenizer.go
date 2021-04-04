@@ -1,8 +1,6 @@
 package unlambda
 
-import (
-	"fmt"
-)
+import ()
 
 type token []string
 
@@ -30,8 +28,4 @@ func (t *token) consume() string {
 	ret := (*t)[0]
 	*t = (*t)[1:]
 	return ret
-}
-
-func (t token) sprint() string {
-	return fmt.Sprint(t)
 }
