@@ -33,7 +33,7 @@ func (t *token) parse() (n *node, err error) {
 }
 
 func (n node) isLeaf() bool {
-	return n.l == nil && n.r == nil
+	return n.l == nil || n.r == nil
 }
 
 func (n *node) add(l, r node) error {
