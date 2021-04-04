@@ -11,7 +11,7 @@ func tokenize(expr string) (token, error) {
 
 	for _, v := range expr {
 		s := string(v)
-		if len(ret) > 0 && ret[len(ret)-1] == "." {
+		if len(ret) > 0 && ret[len(ret)-1] == symbolDotX {
 			ret[len(ret)-1] += s
 			continue
 		}

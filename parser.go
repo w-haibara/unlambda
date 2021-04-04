@@ -14,8 +14,8 @@ func (t *token) parse() (n *node, err error) {
 	v := t.consume()
 	n = new(node)
 
-	if v == "`" && len(*t) != 0 {
-		n.v = "`"
+	if v == symbolAplly && len(*t) != 0 {
+		n.v = symbolAplly
 		n.l, err = t.parse()
 		if err != nil {
 			return nil, err
