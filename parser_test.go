@@ -101,6 +101,55 @@ func Test_parser(t *testing.T) {
 	}
 }
 
+func Test_isLeaf(t *testing.T) {
+	testCases := []struct {
+		in  node
+		out bool
+	}{
+		{
+			in: node{
+				v: "`",
+				l: &node{
+					v: ".a",
+				},
+				r: &node{
+					v: ".b",
+				},
+			},
+			out: false,
+		},
+		{
+			in: node{
+				v: "`",
+				l: &node{
+					v: ".a",
+				},
+			},
+			out: true,
+		},
+		{
+			in: node{
+				v: "`",
+				r: &node{
+					v: ".a",
+				},
+			},
+			out: true,
+		},
+
+		{
+			in: node{
+				v: "`",
+			},
+			out: true,
+		},
+	}
+
+	for _, testCase := range testCases {
+		assert.Equal(t, testCase.out, (&testCase.in).isLeaf())
+	}
+}
+
 func Test_add(t *testing.T) {
 	testCases := []struct {
 		in      node
