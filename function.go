@@ -35,7 +35,7 @@ func (env Env) i(n *node) {
 }
 
 func (env Env) dotX(n *node) {
-	str := string(n.l.v[1:])
+	str := n.l.v[1:]
 	env.i(n)
 	fmt.Fprint(env.Out, str)
 }
