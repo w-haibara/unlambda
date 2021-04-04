@@ -402,3 +402,45 @@ func Test_replaceR(t *testing.T) {
 		}
 	}
 }
+
+func Test_String(t *testing.T) {
+	testCases := []struct {
+		in  node
+		out string
+	}{
+		{
+			in: node{
+				v: "`",
+				l: &node{
+					v: ".a",
+				},
+				r: &node{
+					v: ".b",
+				},
+			},
+			out: "`.a.b",
+		},
+		{
+			in: node{
+				v: "`",
+				l: &node{
+					v: "`",
+					l: &node{
+						v: ".a",
+					},
+					r: &node{
+						v: ".b",
+					},
+				},
+				r: &node{
+					v: ".c",
+				},
+			},
+			out: "``.a.b.c",
+		},
+	}
+
+	for _, testCase := range testCases {
+		assert.Equal(t, testCase.out, (&testCase.in).String())
+	}
+}

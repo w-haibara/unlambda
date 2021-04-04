@@ -60,3 +60,16 @@ func (n *node) replace(p node) {
 	n.l = p.l
 	n.r = p.r
 }
+
+func (n *node) String() string {
+	var ret string
+
+	ret += n.v
+
+	if !n.isLeaf() {
+		ret += n.l.String()
+		ret += n.r.String()
+	}
+
+	return ret
+}
