@@ -1,7 +1,12 @@
 package cli
 
 import (
+	"bufio"
+	"fmt"
 	"io"
+	"os"
+	"strings"
+	"unlambda"
 )
 
 type cli struct {
@@ -11,5 +16,22 @@ type cli struct {
 }
 
 func (c *cli) run() int {
+	e := unlambda.Env{
+		In:  c.inReader,
+		Out: c.outWriter,
+		Err: c.errWriter,
+	}
+
+	fmt.Print("> ")
+
+	stdin := bufio.NewScanner(os.Stdin)
+	stdin.Scan()
+	expr := strings.TrimSpace(stdin.Text())
+
+	fmt.Println(expr)
+
+	e.EvalString(expr)
+	println()
+
 	return 0
 }

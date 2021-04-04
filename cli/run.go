@@ -1,11 +1,14 @@
 package cli
 
-import "os"
+import (
+	"io"
+	"os"
+)
 
 func Run() int {
 	return (&cli{
 		outWriter: os.Stdout,
-		errWriter: os.Stderr,
+		errWriter: io.Discard,
 		inReader:  os.Stdin,
 	}).run()
 }
