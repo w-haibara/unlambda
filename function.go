@@ -34,7 +34,10 @@ func (env Env) k(n *node) {
 }
 
 func (env Env) i(n *node) {
-
+	n.v = n.r.v
+	r := n.r.r
+	n.l = n.r.l
+	n.r = r
 }
 
 func (env Env) p(n *node) {
