@@ -28,7 +28,10 @@ func (c *cli) run() int {
 	stdin.Scan()
 	expr := strings.TrimSpace(stdin.Text())
 
-	e.EvalString(expr)
+	if err := e.EvalString(expr); err != nil {
+		panic(err.Error())
+	}
+
 	println()
 
 	return 0

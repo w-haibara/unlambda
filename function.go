@@ -11,6 +11,7 @@ const (
 	symbolI     = "i"
 	symbolDotX  = "."
 	symbolR     = "r"
+	symbolV     = "v"
 )
 
 func (env Env) s(n *node) {
@@ -43,4 +44,8 @@ func (env Env) dotX(n *node) {
 func (env Env) r(n *node) {
 	env.i(n)
 	fmt.Fprintln(env.Out, "")
+}
+
+func (env Env) v(n *node) {
+	n.replace(*n.l)
 }

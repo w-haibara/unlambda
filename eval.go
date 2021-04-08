@@ -23,8 +23,7 @@ func (env Env) EvalString(expr string) error {
 		return err
 	}
 
-	err = env.eval(n)
-	if err != nil {
+	if err := env.eval(n); err != nil {
 		return err
 	}
 
@@ -187,6 +186,18 @@ func (env Env) eval(n *node) error {
 		}
 
 		env.r(n)
+
+		if err := env.eval(n); err != nil {
+			return err
+		}
+
+		return nil
+	case symbolV:
+		if err := env.eval(n.r); err != nil {
+			return err
+		}
+
+		env.v(n)
 
 		if err := env.eval(n); err != nil {
 			return err
