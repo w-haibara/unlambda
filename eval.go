@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"reflect"
 )
 
 type Env struct {
@@ -70,7 +69,7 @@ func (env Env) eval(n *node, ctx context.Context) (string, error) {
 				return n.String(), nil
 			}
 
-			old := n
+			old := n.String()
 
 			if !n.l.r.isLeaf() {
 				if res, err := env.eval(n.l.r, ctx); err != nil {
@@ -84,8 +83,8 @@ func (env Env) eval(n *node, ctx context.Context) (string, error) {
 				}
 			}
 
-			if reflect.DeepEqual(old, n) {
-				return n.String(), nil
+			if old == n.String() {
+				return old, nil
 			}
 
 			if res, err := env.eval(n, ctx); err != nil {
