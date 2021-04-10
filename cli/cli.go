@@ -2,24 +2,23 @@ package cli
 
 import (
 	"bufio"
+	"bytes"
+	"context"
 	"fmt"
-	"io"
 	"os"
+	"os/signal"
 	"strings"
+	"syscall"
+	"time"
 	"unlambda"
 )
 
-type cli struct {
-	inReader  io.Reader
-	outWriter io.Writer
-	errWriter io.Writer
-}
-
-func (c *cli) run() int {
-	e := unlambda.Env{
-		In:  c.inReader,
-		Out: c.outWriter,
-		Err: c.errWriter,
+func Run() int {
+	out := &bytes.Buffer{}
+	env := unlambda.Env{
+		In:  os.Stdin,
+		Out: out,
+		Err: os.Stderr,
 	}
 
 	fmt.Print("> ")
@@ -28,11 +27,42 @@ func (c *cli) run() int {
 	stdin.Scan()
 	expr := strings.TrimSpace(stdin.Text())
 
-	if err := e.EvalString(expr); err != nil {
-		panic(err.Error())
+	c := make(chan os.Signal)
+	signal.Notify(c, syscall.SIGINT)
+	ctx, cancel := context.WithTimeout(context.Background(),
+		time.Duration(time.Millisecond*500))
+	defer cancel()
+
+	go func() {
+		sig := <-c
+		fmt.Printf("Got %s signal. Aborting...\n", sig)
+		cancel()
+	}()
+
+	var res string
+
+	defer func() {
+		fmt.Println("")
+		fmt.Println("--- Result ---")
+		fmt.Println(res)
+		fmt.Println("-- Output ---")
+		fmt.Println(out)
+	}()
+
+	res, err := run(env, expr, ctx)
+	if err != nil {
+		fmt.Errorf(err.Error())
+		return 1
 	}
 
-	println()
-
 	return 0
+}
+
+func run(env unlambda.Env, expr string, ctx context.Context) (string, error) {
+	res, err := env.EvalString(expr, ctx)
+	if err != nil {
+		return "", err
+	}
+
+	return res, nil
 }
