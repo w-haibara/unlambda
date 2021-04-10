@@ -420,3 +420,45 @@ func Test_v(t *testing.T) {
 		out.Reset()
 	}
 }
+
+func Test_e(t *testing.T) {
+	testCases := []struct {
+		in      node
+		inAfter node
+		out     string
+	}{
+		{
+			in: node{
+				v: "`",
+				l: &node{
+					v: "e",
+				},
+				r: &node{
+					v: ".a",
+				},
+			},
+			inAfter: node{
+				v: ".a",
+			},
+			out: "",
+		},
+	}
+
+	out := &bytes.Buffer{}
+	env := Env{
+		//In:  os.Stdin,
+		Out: out,
+		Err: os.Stderr,
+	}
+
+	for _, testCase := range testCases {
+		env.e(&testCase.in)
+
+		if diff := cmp.Diff(testCase.inAfter, testCase.in, cmp.AllowUnexported(testCase.in)); diff != "" {
+			t.Error(diff)
+		}
+
+		assert.Equal(t, testCase.out, out.String())
+		out.Reset()
+	}
+}

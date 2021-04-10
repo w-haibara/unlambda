@@ -3,6 +3,7 @@ package unlambda
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"fmt"
 	"os"
 	"testing"
@@ -174,6 +175,25 @@ func Test_eval(t *testing.T) {
 			out:     "ab",
 			err:     nil,
 		},
+		// function e
+		{
+			in:      "`ei",
+			inAfter: "i",
+			out:     "",
+			err:     nil,
+		},
+		{
+			in:      "`e```s.a.b.c",
+			inAfter: ".c",
+			out:     "abc",
+			err:     nil,
+		},
+		{
+			in:      "``.a.b`e.c",
+			inAfter: ".c",
+			out:     "a",
+			err:     nil,
+		},
 	}
 
 	f, err := os.Create("test.log")
@@ -197,22 +217,20 @@ func Test_eval(t *testing.T) {
 		fmt.Fprintln(fr, i, testCase.in)
 		fmt.Println(i, testCase.in)
 
-		token, err := tokenize(testCase.in)
-		if err != nil {
-			panic(err)
-		}
+		ctx := context.Background()
+		res, err := env.EvalString(testCase.in, ctx)
 
-		node, err := token.parse()
-		if err != nil {
-			panic(err)
-		}
-
-		err = env.eval(node)
+		fmt.Fprintln(fr, "")
+		fmt.Fprintln(fr, "err:", err)
+		fmt.Fprintln(fr, "--- out --- ")
+		fmt.Fprintln(fr, buf.String())
+		fmt.Fprintln(fr, "--- res --- ")
+		fmt.Fprintln(fr, res)
 
 		fmt.Fprint(fr, "--------------------------------------------\n\n")
 
 		assert.Equal(t, testCase.err, err)
 		assert.Equal(t, testCase.out, buf.String())
-		assert.Equal(t, testCase.inAfter, node.String())
+		assert.Equal(t, testCase.inAfter, res)
 	}
 }

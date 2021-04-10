@@ -12,6 +12,7 @@ const (
 	symbolDotX  = "."
 	symbolR     = "r"
 	symbolV     = "v"
+	symbolE     = "e"
 )
 
 func (env Env) s(n *node) {
@@ -48,4 +49,8 @@ func (env Env) r(n *node) {
 
 func (env Env) v(n *node) {
 	n.replace(*n.l)
+}
+
+func (env Env) e(n *node) {
+	n.replace(*n.r)
 }
