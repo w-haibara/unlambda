@@ -1,19 +1,31 @@
 package cli
 
 import (
-	"bufio"
 	"bytes"
 	"context"
 	"fmt"
+	"log"
 	"os"
-	"os/signal"
-	"strings"
-	"syscall"
 	"time"
 	"unlambda"
+
+	"github.com/peterh/liner"
 )
 
+const history historyFileName = ".w-haibara_unlambda_history"
+
 func Run() int {
+	run()
+	return 0
+}
+
+func run() {
+	line := liner.NewLiner()
+	defer line.Close()
+	line.SetCtrlCAborts(true)
+	history.readHistory(line)
+	defer history.writeHistory(line)
+
 	out := &bytes.Buffer{}
 	env := unlambda.Env{
 		In:  os.Stdin,
@@ -21,44 +33,39 @@ func Run() int {
 		Err: os.Stderr,
 	}
 
-	fmt.Print("> ")
+	for {
+		expr, err := line.Prompt(">>> ")
 
-	stdin := bufio.NewScanner(os.Stdin)
-	stdin.Scan()
-	expr := strings.TrimSpace(stdin.Text())
+		ctx, cancel := context.WithTimeout(context.Background(),
+			time.Duration(time.Millisecond*500))
+		defer cancel()
 
-	c := make(chan os.Signal)
-	signal.Notify(c, syscall.SIGINT)
-	ctx, cancel := context.WithTimeout(context.Background(),
-		time.Duration(time.Millisecond*500))
-	defer cancel()
+		if err == nil {
+			var res string
+			res, err := eval(env, expr, ctx)
+			if err != nil {
+				fmt.Errorf(err.Error())
+			}
 
-	go func() {
-		sig := <-c
-		fmt.Printf("Got %s signal. Aborting...\n", sig)
-		cancel()
-	}()
+			fmt.Println("")
+			fmt.Println("--- Result ---")
+			fmt.Println(res)
+			fmt.Println("-- Output ---")
+			fmt.Println(out)
 
-	var res string
-
-	defer func() {
-		fmt.Println("")
-		fmt.Println("--- Result ---")
-		fmt.Println(res)
-		fmt.Println("-- Output ---")
-		fmt.Println(out)
-	}()
-
-	res, err := run(env, expr, ctx)
-	if err != nil {
-		fmt.Errorf(err.Error())
-		return 1
+			line.AppendHistory(expr)
+			out.Reset()
+		} else if err == liner.ErrPromptAborted {
+			cancel()
+			break
+		} else {
+			log.Print("Error reading line: ", err)
+			break
+		}
 	}
-
-	return 0
 }
 
-func run(env unlambda.Env, expr string, ctx context.Context) (string, error) {
+func eval(env unlambda.Env, expr string, ctx context.Context) (string, error) {
 	res, err := env.EvalString(expr, ctx)
 	if err != nil {
 		return "", err

@@ -1,6 +1,8 @@
 package unlambda
 
-import ()
+import (
+	"fmt"
+)
 
 type token []string
 
@@ -19,6 +21,10 @@ func tokenize(expr string) (token, error) {
 		}
 
 		ret = append(ret, s)
+	}
+
+	if len(ret) == 0 {
+		return token{}, fmt.Errorf("token length is zero")
 	}
 
 	return ret, nil
